@@ -1,9 +1,3 @@
 model_tf:
-  layers:
-  - LSTM
-  - Dense
-  - Dense
-  units:
-  - 1
-  - 1
-  - 1
+  layers: null
+  units: null

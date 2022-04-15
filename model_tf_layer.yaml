@@ -1,9 +1,0 @@
-model_tf:
-  layers:
-  - LSTM
-  - LSTM
-  - Dense
-  units:
-  - 8
-  - 4
-  - 2

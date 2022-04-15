@@ -1,14 +1,16 @@
-from src.common.model_holder import model_dict
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
+from src.common.constant import PATH
 import tensorflow as tf
 import pandas as pd
+import streamlit as st
 
 class Model_TF():
     def __init__(self):
         self.model = tf.keras.Sequential()
+        self.path = PATH.model_tf
     
-    def build(self, layers):
+    def create(self, data, layers, units, epoch):
         """
         build tf model with corresponding layers
         input :
@@ -17,23 +19,33 @@ class Model_TF():
         output :
             tf.keras.sequential
         """
-        depth = 0
-        for layer, unit in layers.items():
-            if layer == 'LSTM':
-                if depth == 0:
-                    self.model.add(tf.keras.layers.LSTM(unit))
-                else :
-                    self.model.add(tf.keras.layers.LSTM(unit, return_sequences=True))
+        depth=0
+        for i in range(len(layers)):
+            if layers[i] == 'LSTM':
+                if i<len(layers)-1:
+                    if layers[i+1]=='LSTM':
+                        print(i, layers[i], 'return seq')
+                        self.model.add(tf.keras.layers.LSTM(units[i], return_sequences=True))
+                    else :
+                        print(i, layers[i], 'no return seq')
+                        self.model.add(tf.keras.layers.LSTM(units[i]))
+                else:
+                    print(i, layers[i], 'no return seq')
+                    self.model.add(tf.keras.layers.LSTM(units[i]))
             else:
-                self.model.add(tf.keras.layers.Dense(unit))
+                self.model.add(tf.keras.layers.Dense(units[i]))
             depth+=1
         self.model.add(tf.keras.layers.Dense(1))
-        
-    def compile_and_fit(self, data, epochs, verbose, patience=5):
+        self.compile_and_fit(data, epoch)
+        #self.model.build((None, data.X_tr.shape[1], data.X_tr.shape[2]))
+        # print('-----------MODEL SUMMARY------------------')
+        # print(self.model.summary())
+        self.save(self.path)
+
+    def compile_and_fit(self, data, epochs, verbose=0, patience=5):
         early_stopping = tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error',
                                                         patience=patience,
                                                         mode='min')
-
         self.model.compile(loss=tf.losses.Huber(),
                     optimizer=tf.optimizers.Adam(),
                     metrics=[tf.metrics.MeanSquaredError()])
@@ -96,6 +108,7 @@ class Model_TF():
     
     def visualize(self, data, scaled):
         y_pred = self.model.predict(data.X_test)
+        st.write(y_pred)
         if scaled:
             #original
             ori_predict = list(data.transformer.inverse_transform(y_pred.reshape(-1,1))[:, 0])
@@ -109,4 +122,10 @@ class Model_TF():
                 'y_original':list(data.y_test[:, 0]),
                 'y_predicted':list(y_pred[:, 0])
             })
-        
+
+    def save(self, path):
+        self.model.save(path)
+
+    def load(self, path):
+        self.model = tf.keras.models.load_model(path)
+    
