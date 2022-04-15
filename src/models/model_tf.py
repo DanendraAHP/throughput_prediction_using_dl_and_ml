@@ -5,8 +5,29 @@ import tensorflow as tf
 import pandas as pd
 
 class Model_TF():
-    def __init__(self, model_name):
-        self.model = model_dict[model_name]
+    def __init__(self):
+        self.model = tf.keras.Sequential()
+    
+    def build(self, layers):
+        """
+        build tf model with corresponding layers
+        input :
+            layers : dictionary of layer with the key is their type
+                     and the value is their units
+        output :
+            tf.keras.sequential
+        """
+        depth = 0
+        for layer, unit in layers.items():
+            if layer == 'LSTM':
+                if depth == 0:
+                    self.model.add(tf.keras.layers.LSTM(unit))
+                else :
+                    self.model.add(tf.keras.layers.LSTM(unit, return_sequences=True))
+            else:
+                self.model.add(tf.keras.layers.Dense(unit))
+            depth+=1
+        self.model.add(tf.keras.layers.Dense(1))
         
     def compile_and_fit(self, data, epochs, verbose, patience=5):
         early_stopping = tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error',
