@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from src.pages.user_input import user_page
+from src.pages.demo import demo_page
 
 ##############################sidebar##############################
 select_page = st.sidebar.selectbox(
@@ -16,4 +17,4 @@ st.title("About This App")
 if select_page=="Create your own":
     user_page()
 else:
-    st.markdown("Still in development")
+    demo_page() #st.markdown("Still in development")

@@ -5,6 +5,7 @@ from src.common.constant import PATH
 from src.models.model_tf import Model_TF
 import pandas as pd
 
+
 def model_page(data, scaled):
     method_select = st.sidebar.selectbox(
         "Select what method to use?",
