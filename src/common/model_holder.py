@@ -12,5 +12,4 @@ model_dict = {
         tf.keras.layers.Dense(units=4, activation='relu'),
         tf.keras.layers.Dense(units=1)
     ])
-
 }
