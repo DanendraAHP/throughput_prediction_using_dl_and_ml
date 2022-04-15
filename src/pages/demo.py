@@ -5,6 +5,22 @@ import streamlit as st
 from src.pages.filter_features import feature_sidebar
 from src.pages.filter_scaling import scaling_sidebar
 from src.pages.model_selection import model_page
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+# For ARIMA (order: dl_avg, ul_avg, dl_peak, ul_peak)
+AR = [1, 1, 1, 3]
+MA = [0, 0, 0, 0]
+# For SARIMAX (order: dl_avg, ul_avg, dl_peak, ul_peak)
+p = [1,1,1,3]
+P = [0,0,2,2]
+Q = [0,0,1,0]
+target_list = ['dl_avg', 'ul_avg', 'dl_peak', 'ul_peak']
+target_dict = {j: i for i, j in target_list.enumerate()}
+
+
 def demo_page():
     #st.markdown("### Upload a csv file for analysis.") 
     #st.write("\n")
@@ -26,44 +42,37 @@ def demo_page():
     data = Dataset(df, target, variate)
     if data.target_num :
         #initial state
-        scale = False
-        drop_low = False
+        scale = True 
+        drop_low = True
         scaling_option = 'Robust'
-
-        # st.markdown("There are some data we won't include because not numeric")
-        # st.markdown(f"Not included here:")
-        # st.markdown(f"{data.other_cols}")
-        # st.markdown(f"{data.num_cols}")
-        # st.markdown(f"Change it to numeric first if you want to use it")
-        # #test shape
-        # st.markdown(f"X shape : {data.X.shape}")
-        # st.markdown(f"y shape : {data.y.shape}")
-        #train test split percentage
-        percentage = st.sidebar.select_slider(
-                "Train to Val ratio?",
-                [i*0.1 for i in range(1,10)],
-                value = 0.8
-        )
+        percentage = 0.75
+        data(variate, 
+            scale=scale, 
+            scale_kind=scaling_option, 
+            train_perc=percentage, 
+            drop_low=drop_low)
         #must check if the data multivariable or not
+        i = target_dict(target)
         if variate=='Multivariable':
-            #choose if want to use feature selection
-            if st.sidebar.checkbox('Do you want to use feature selection?'):
-                feature_sidebar(data)
-            #choose if want to drop low variance column
-            if st.sidebar.checkbox('Do you want to drop low variance in the data?'):
-                drop_low = True
-        #choose if want to scale the data
-        if st.sidebar.checkbox('Do you want to scale the data?'):
-            scaling_option = scaling_sidebar()
-            scale = True
+            # RF dan SVR
+            rf_model = RandomForestRegressor(n_estimators= 1400, 
+                                    min_samples_split= 2, 
+                                    min_samples_leaf= 1, 
+                                    max_features= 'auto', 
+                                    max_depth= 100, 
+                                    bootstrap= True, 
+                                    random_state = 42)
+            svr_model = SVR(kernel='linear')
+        else:
+            # ARIMA dan SARIMAX
+            arima_model = ARIMA(data, order=(AR[i],0,MA[i]))
+            sarimax_model = SARIMAX(data,
+                            order=(p[i], 0, 0),
+                            seasonal_order=(P[i], 0, Q[i], 24),
+                            enforce_stationarity=False,
+                            enforce_invertibility=False)
+
         
-        #choose the data timelag
-        time_lag = st.number_input('The timelag you want to use?', value=1)
-        verify = st.checkbox("Verify your choice?")
-        
-        if verify:
-            data(variate, time_lag=time_lag, scale=scale, scale_kind=scaling_option, train_perc=percentage, drop_low=drop_low)
-            model_page(data, scale)
     else:
         st.error("Target is not numeric columns")
     

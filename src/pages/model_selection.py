@@ -2,6 +2,9 @@ import streamlit as st
 from src.common.model_holder import model_dict
 from src.models.model_tf import Model_TF
 import pandas as pd
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
 
 def model_page(data, scaled):
     model_select = st.sidebar.selectbox(
