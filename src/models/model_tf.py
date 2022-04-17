@@ -3,6 +3,7 @@ import numpy as np
 from src.common.constant import PATH
 import tensorflow as tf
 import pandas as pd
+from src.common.hyperparameter_holder import tf_optimizer_dict, tf_losses_dict, tf_metrics_dict, tf_monitor_dict
 import streamlit as st
 
 class Model_TF():
@@ -10,7 +11,7 @@ class Model_TF():
         self.model = tf.keras.Sequential()
         self.path = PATH.model_tf
     
-    def create(self, data, layers, units, epoch):
+    def create(self, data, layers, units, epochs, loss, optimizer, metrics, lr, monitor, callback, patience):
         """
         build tf model with corresponding layers
         input :
@@ -19,7 +20,6 @@ class Model_TF():
         output :
             tf.keras.sequential
         """
-        depth=0
         for i in range(len(layers)):
             if layers[i] == 'LSTM':
                 if i<len(layers)-1:
@@ -34,24 +34,31 @@ class Model_TF():
                     self.model.add(tf.keras.layers.LSTM(units[i]))
             else:
                 self.model.add(tf.keras.layers.Dense(units[i]))
-            depth+=1
+                if i==len(layers)-1:
+                    self.model.add(tf.keras.layers.Flatten())
         self.model.add(tf.keras.layers.Dense(1))
-        self.compile_and_fit(data, epoch)
-        #self.model.build((None, data.X_tr.shape[1], data.X_tr.shape[2]))
-        # print('-----------MODEL SUMMARY------------------')
-        # print(self.model.summary())
-        self.save(self.path)
+        self.compile_and_fit(data, epochs, loss, optimizer, metrics, lr, monitor, callback, patience)
+        self.save()
 
-    def compile_and_fit(self, data, epochs, verbose=0, patience=5):
-        early_stopping = tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error',
-                                                        patience=patience,
-                                                        mode='min')
-        self.model.compile(loss=tf.losses.Huber(),
-                    optimizer=tf.optimizers.Adam(),
-                    metrics=[tf.metrics.MeanSquaredError()])
-
-        history = self.model.fit(data.X_tr, data.y_tr, epochs=epochs,
-                        callbacks=[early_stopping],verbose=verbose)
+    def compile_and_fit(self, data, epochs, loss, optimizer, metrics, lr, monitor, callback, patience):
+        #set the optimizer and their lr
+        optimizer = tf_optimizer_dict[optimizer]
+        optimizer.learning_rate = lr
+        self.model.compile(
+            loss = tf_losses_dict[loss],
+            optimizer = optimizer,
+            metrics = [tf_metrics_dict[metrics]]
+        )
+        if callback:
+            early_stopping = tf.keras.callbacks.EarlyStopping(
+                monitor = monitor,
+                patience = patience,
+                mode='min'
+            )
+            history = self.model.fit(data.X_tr, data.y_tr, epochs=epochs, callbacks=[early_stopping],verbose=0)
+            print(self.model.summary())
+        else :
+            history = self.model.fit(data.X_tr, data.y_tr, epochs=epochs,verbose=0)
         return history
         
     def infer(self, data):
@@ -76,39 +83,33 @@ class Model_TF():
             ori_y = data.transformer.inverse_transform(data.y_test.reshape(-1,1))
             
             #calculate mae
-            norm_mae = mean_absolute_error(y_pred[:, 0], data.y_test)
+            #norm_mae = mean_absolute_error(y_pred[:, 0], data.y_test)
             ori_mae = mean_absolute_error(ori_predict, ori_y)
             
             #calculate mse
-            norm_mse = mean_squared_error(y_pred[:,0], data.y_test)
+            #norm_mse = mean_squared_error(y_pred[:,0], data.y_test)
             ori_mse = mean_squared_error(ori_predict, ori_y)
             
             #calculate r-squared
-            norm_r_squared = r2_score(y_pred[:,0], data.y_test)
+            #norm_r_squared = r2_score(y_pred[:,0], data.y_test)
             ori_r_squared = r2_score(ori_predict, ori_y)
-            
             eval_holder = {
-                'norm_mae' : [norm_mae],
-                'ori_mae' : [ori_mae],
-                'norm_mse' : [norm_mse],
-                'ori_mse' : [ori_mse],
-                'norm_r_squared' : [norm_r_squared],
-                'ori_r_squared' : [ori_r_squared]
+                'Metrics' : ['MAE', 'MSE', 'R_Squared'],
+                'Score' : [ori_mae, ori_mse, ori_r_squared]
             }
         else :
             mae = mean_absolute_error(y_pred[:, 0], data.y_test)
             mse = mean_squared_error(y_pred[:,0], data.y_test)
             r_squared = r2_score(y_pred[:,0], data.y_test)
             eval_holder = {
-                'mae' : [mae],
-                'mse' : [mse],
-                'r_squared' : [r_squared]
+                'Metrics' : ['MAE', 'MSE', 'R_Squared'],
+                'Score' : [mae, mse, r_squared]
             }
         return eval_holder
     
     def visualize(self, data, scaled):
         y_pred = self.model.predict(data.X_test)
-        st.write(y_pred)
+        
         if scaled:
             #original
             ori_predict = list(data.transformer.inverse_transform(y_pred.reshape(-1,1))[:, 0])
@@ -123,9 +124,9 @@ class Model_TF():
                 'y_predicted':list(y_pred[:, 0])
             })
 
-    def save(self, path):
-        self.model.save(path)
+    def save(self):
+        self.model.save(self.path)
 
-    def load(self, path):
-        self.model = tf.keras.models.load_model(path)
+    def load(self):
+        self.model = tf.keras.models.load_model(self.path)
     

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
-from src.common.scaler_holder import scaler_dict
+from src.common.hyperparameter_holder import scaler_dict
 
 def low_variance(data, threshold=(.8 * (1 - .8))):
     """

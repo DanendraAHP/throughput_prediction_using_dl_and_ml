@@ -33,7 +33,6 @@ def check_layer(file):
     model_tf_layer, model_tf_units = get_config(file)
     for i in range(1, len(model_tf_layer)):
         if model_tf_layer[i] == 'LSTM' and model_tf_layer[i-1] == 'Dense':
-            st.write('Model layer error')
             return False
     return True
 
