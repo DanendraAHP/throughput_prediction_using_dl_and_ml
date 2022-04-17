@@ -1,17 +1,7 @@
-from src.models.model_tf import Model_TF
-from src.common.constant import PATH
-import tensorflow as tf
-
-
-# model = tf.keras.Sequential()
-# model.add(tf.keras.layers.LSTM(8, return_sequences=True))
-# model.add(tf.keras.layers.LSTM(4))
-# model.add(tf.keras.layers.Dense(1))
-# model.build((None, 3, 1))
-# print(model.summary())
-
-
-model_file = PATH.model_tf
-model = Model_TF()
-model.load(model_file)
-print(model.model.  summary())
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.datasets import make_regression
+X, y = make_regression(n_features=4, n_informative=2,
+                        random_state=0, shuffle=False)
+regr = RandomForestRegressor()
+regr.set_params(max_depth=2, random_state=0)
+regr.fit(X,y)

@@ -1,4 +1,4 @@
-from src.common.scaler_holder import scaler_dict
+from src.common.hyperparameter_holder import scaler_dict
 import streamlit as st
 
 def scaling_sidebar():
