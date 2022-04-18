@@ -5,3 +5,4 @@ sklearn_model = {
     'Random Forest' : RandomForestRegressor(),
     'Support Vector Regression' : SVR()
 }
+

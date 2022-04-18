@@ -34,9 +34,12 @@ explanation_text:
     The data points on either side of the hyperplane that are closest to the hyperplane
     are called Support Vectors. These influence the position and orientation of the
     hyperplane and thus help build the SVM.
-  compare_all_model: " This method will compare all the machine learning and deep\
-    \ learning model. The model that will be compared is : \n Machine learning : \n\
-    \ - Support Vector Regression \n - Random Forest \n Deep Learning : \n - LSTM\
+  compare_all_model: " This method will compare all the statistic, machine learning and deep learning model. The model that will be compared is : \n \
+    \ Statistic : The statistic model will only work when the data is univariable with 1 timelag \ \n
+    \ - ARIMA \n - SARIMAX \n \
+    \ Machine learning : \n \
+    \ - Support Vector Regression \n - Random Forest \n \
+    \ \n Deep Learning : \n - LSTM\
     \ Model : with 2 LSTM hidden layer, the first layer will have 8 hidden unit while\
     \ the second layer have 4 hidden unit \n - Dense Model : with 2 dense hidden layer,\
     \ the first layer will have 8 hidden unit while the second layer have 4 hidden\
@@ -60,6 +63,14 @@ explanation_text:
     the overall loss and improve the accuracy. '
   tf_patience: The model will see the last n epochs, if at the last n epoch the model
     don't improve then early stopping will activate
+  arima_p : "The minimum number of differencing needed to make the series stationary. And if the time series is already stationary, then d = 0"
+  arima_q : "Number of lags of Y to be used as predictors"
+  arima_d : "Number of lagged forecast errors that should go into the Model"
+  sarimax_P : ""
+  sarimax_Q : ""
+  sarimax_D : ""
+  sarimax_s : ""
+
 model_tf:
   layers: null
   units: null

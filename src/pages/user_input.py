@@ -56,7 +56,7 @@ def user_page():
             
             if verify:
                 data(variate, time_lag=time_lag, scale=scale, scale_kind=scaling_option, train_perc=percentage, drop_low=drop_low)
-                model_page(data, scale)
+                model_page(data, scale, variate, time_lag)
         else:
             st.error("Target is not numeric columns")
     

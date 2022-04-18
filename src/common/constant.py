@@ -9,9 +9,10 @@ class PATH:
     #model file
     model_tf = os.path.join(model, 'model_tf')
     model_sklearn = os.path.join(model, 'model_sklearn.sav')
+    model_stat = os.path.join(model, 'model_stat.pkl')
     #img file
     RF_img = os.path.join(img, 'Random_forest.png')
-    SVR_img = os.path.join(img, 'SVR.jpeg')
+    SVR_img = os.path.join(img, 'SVR.png')
     #csv file
     eval_df = os.path.join(csv, 'eval_df.csv')
     visualize_df = os.path.join(csv, 'visualize_df.csv')

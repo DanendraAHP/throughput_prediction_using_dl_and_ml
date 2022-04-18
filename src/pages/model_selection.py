@@ -1,20 +1,21 @@
+from re import S
 import streamlit as st
 from tensorflow import keras
 from src.models.create_model_tf import get_config, add_layer, remove_layer, clear_layer,check_layer
 from src.common.hyperparameter_holder import tf_losses_dict, tf_metrics_dict, tf_monitor_dict, tf_optimizer_dict
 from src.common.constant import PATH
 from src.models.model_tf import Model_TF
-import pandas as pd
 from src.models.model_sklearn import Model_SKLearn
+from src.models.model_stat import Model_Stat
+import pandas as pd
 from src.common.model_holder import sklearn_model
-import tensorflow as tf
 from src.common.yaml_util import read_yaml_file
+
 
 EXPLANATION_TEXT = read_yaml_file(PATH.config)
 EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
 
-
-def model_page(data, scaled):
+def model_page(data, scaled, variate, time_lag):
     st.header("Model Creation Page")
     method_select = st.sidebar.selectbox(
         "Select what method to use?",
@@ -27,13 +28,12 @@ def model_page(data, scaled):
     elif method_select == 'Compare All Model':
         st.info(EXPLANATION_TEXT['compare_all_model'])
         if st.button("Compare all model"):
-            compare_all_page(data, scaled)
+            compare_all_page(data, scaled, variate, time_lag)
     elif method_select == 'Statistic' :
-        st.write('Not yet implemented')
-        # model_select = st.sidebar.selectbox(
-        #     "Select what model to use?",
-        #     ['ARIMA', 'SARIMAX']
-        # )
+        if variate == 'Univariable' and time_lag == 1:
+            statistic_page(data)
+        else:
+            st.warning("Please make your data to univariable with timelag = 1")
     eval = st.button('evaluate the model')
     if eval:
         #for compare all model
@@ -57,7 +57,9 @@ def model_page(data, scaled):
                 model = Model_SKLearn('Random Forest')
                 model.load()
             #for statsmodel
-            #not implemented yet
+            elif method_select == 'Statistic':
+                model = Model_Stat(data)
+                model.load()
             #evaluation and visualization
             with st.container():
                 st.header("Model Performance")
@@ -68,7 +70,46 @@ def model_page(data, scaled):
                 eval_metric = model.evaluate(data, scaled)
                 st.dataframe(pd.DataFrame(eval_metric))
 
-def compare_all_page(data, scaled):
+def statistic_page(data):
+    model_select = st.sidebar.selectbox(
+            "Select what model to use?",
+            ['ARIMA', 'SARIMAX']
+    )
+    with st.container():
+        p = st.number_input('Autoregressive', value=0)
+        p_explanation = st.expander("See Autoregressive Explanation")
+        p_explanation.write(EXPLANATION_TEXT['arima_p'])
+        q = st.number_input('Moving Average', value=0)
+        q_explanation = st.expander("See Moving Average Explanation")
+        q_explanation.write(EXPLANATION_TEXT['arima_q'])
+        d = st.number_input('Differences', value=0)
+        d_explanation = st.expander("See Differences Explanation")
+        d_explanation.write(EXPLANATION_TEXT['arima_d'])
+        if model_select == 'ARIMA':
+            if st.button('Train the model'):
+                model = Model_Stat(data)
+                model.train(model_select, p, d, q)
+                st.success("Model has been trained")
+        else :
+            #SARIMAX Only
+            P = st.number_input('Seasonal Component Autoregressive', value=0)
+            P_explanation = st.expander("See Seasonal Component Autoregressive Explanation")
+            P_explanation.write(EXPLANATION_TEXT['sarimax_P'])
+            Q = st.number_input('Seasonal Component Moving Average', value=0)
+            Q_explanation = st.expander("See Seasonal Component Moving Average Explanation")
+            Q_explanation.write(EXPLANATION_TEXT['sarimax_Q'])
+            D = st.number_input('Seasonal Component Differences', value=0)
+            D_explanation = st.expander("See Differences Explanation")
+            D_explanation.write(EXPLANATION_TEXT['sarimax_D'])
+            s = st.number_input('Periodicity', value=24)
+            s_explanation = st.expander("See Periodicity Explanation")
+            s_explanation.write(EXPLANATION_TEXT['sarimax_s'])
+            if st.button('Train the model'):
+                model = Model_Stat(data)
+                model.train(model_select, p, d, q, P, D, Q, s)
+                st.success("Model has been trained")
+
+def compare_all_page(data, scaled, variate, time_lag):
     with st.spinner("Training the model"):
         #holder
         all_vis_df = pd.DataFrame()
@@ -103,10 +144,28 @@ def compare_all_page(data, scaled):
         eval_metric = model.evaluate(data, scaled)
         all_vis_df['SVR Prediction'] = visualize_df['y_predicted']
         all_eval_df['SVR Score'] = eval_metric['Score']
+        if variate == 'Univariable' and time_lag == 1:
+            #create ARIMA Model
+            model = Model_Stat(data)
+            model.train('ARIMA', 1, 0, 0)
+            visualize_df = model.visualize(data, scaled)
+            eval_metric = model.evaluate(data, scaled)
+            all_vis_df['ARIMA Prediction'] = visualize_df['y_predicted']
+            all_eval_df['ARIMA Score'] = eval_metric['Score']
+            #create SARIMAX Model
+            model = Model_Stat(data)
+            model.train('SARIMAX', 1, 0, 0, 0, 0, 0, 24)
+            visualize_df = model.visualize(data, scaled)
+            eval_metric = model.evaluate(data, scaled)
+            all_vis_df['SARIMAX Prediction'] = visualize_df['y_predicted']
+            all_eval_df['SARIMAX Score'] = eval_metric['Score']
+        else :
+            st.info("The stats model will only trained if the data have univariable type with it's timelag = 1")
+        #finished
         st.success("All model has been trained")
         all_vis_df.to_csv(PATH.visualize_df, index=False)
         all_eval_df.to_csv(PATH.eval_df, index=False)
-
+        
 def model_sklearn_page(data):
     model_select = st.sidebar.selectbox(
             "Select what model to use?",
