@@ -1,4 +1,5 @@
 import pandas as pd
+import seaborn as sns
 from pandas.api.types import is_numeric_dtype
 from sklearn.preprocessing import MinMaxScaler
 from src.utils.preprocess import scale_data, low_variance, windowing_dataset, split_data

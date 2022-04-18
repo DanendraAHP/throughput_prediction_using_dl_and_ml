@@ -2,6 +2,8 @@ import streamlit as st
 from src.pages.user_input import user_page
 from src.common.constant import PATH
 from src.common.yaml_util import read_yaml_file
+from src.pages.demo import demo_page
+
 
 EXPLANATION_TEXT = read_yaml_file(PATH.config)
 EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
@@ -17,4 +19,4 @@ if select_page == "Home":
 elif select_page=="Create your own":
     user_page()
 else:
-    st.markdown("Still in development")
+    demo_page() #st.markdown("Still in development")

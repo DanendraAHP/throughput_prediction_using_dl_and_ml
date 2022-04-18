@@ -13,6 +13,7 @@ from src.common.yaml_util import read_yaml_file
 EXPLANATION_TEXT = read_yaml_file(PATH.config)
 EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
 
+
 def model_page(data, scaled):
     st.header("Model Creation Page")
     method_select = st.sidebar.selectbox(
