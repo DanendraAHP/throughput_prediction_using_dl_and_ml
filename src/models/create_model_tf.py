@@ -9,7 +9,9 @@ def get_config(file):
     return model_tf_layer, model_tf_units
 
 def write_to_yaml(file, model_tf_layer, model_tf_units):
-    config = {'model_tf':{'layers':model_tf_layer,'units':model_tf_units}}
+    config = read_yaml_file(file)
+    config['model_tf']['layers'] = model_tf_layer
+    config['model_tf']['units'] = model_tf_units
     write_yaml(config, file)
 
 def add_layer(file, layer, unit):

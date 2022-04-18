@@ -103,8 +103,8 @@ def compare_all_page(data, scaled):
         all_vis_df['SVR Prediction'] = visualize_df['y_predicted']
         all_eval_df['SVR Score'] = eval_metric['Score']
         st.success("All model has been trained")
-        all_vis_df.to_csv(PATH.visualize_df)
-        all_eval_df.to_csv(PATH.eval_df)
+        all_vis_df.to_csv(PATH.visualize_df, index=False)
+        all_eval_df.to_csv(PATH.eval_df, index=False)
 
 def model_sklearn_page(data):
     model_select = st.sidebar.selectbox(
@@ -140,7 +140,7 @@ def model_sklearn_page(data):
     else:
         with st.container():
             #model explanation
-            st.subheader('What is Support Vector Regression')
+            st.subheader('What is Random Forest')
             st.image(PATH.RF_img)
             st.write(EXPLANATION_TEXT['RF'])
             #model hyperparameter

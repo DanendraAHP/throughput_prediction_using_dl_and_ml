@@ -7,11 +7,11 @@ class PATH:
     csv = os.path.join(resources, 'csv')
     config = os.path.join(base_dir, 'config.yaml')
     #model file
-    model_tf = os.path.join(model, 'model_tf.h5')
+    model_tf = os.path.join(model, 'model_tf')
     model_sklearn = os.path.join(model, 'model_sklearn.sav')
     #img file
     RF_img = os.path.join(img, 'Random_forest.png')
     SVR_img = os.path.join(img, 'SVR.jpeg')
     #csv file
     eval_df = os.path.join(csv, 'eval_df.csv')
-    visualize_df = os.path.join(csv, 'visualize_df')
+    visualize_df = os.path.join(csv, 'visualize_df.csv')
