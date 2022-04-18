@@ -109,7 +109,6 @@ class Model_TF():
     
     def visualize(self, data, scaled):
         y_pred = self.model.predict(data.X_test)
-        
         if scaled:
             #original
             ori_predict = list(data.transformer.inverse_transform(y_pred.reshape(-1,1))[:, 0])

@@ -32,7 +32,7 @@ def demo_page():
 
     # Code to read a single file 
     #uploaded_file = st.sidebar.file_uploader("Choose a file", type = ['csv'])
-    df = pd.read_csv('throughput_prediction_using_dl_and_ml\data')
+    df = pd.read_csv('resources/csv/102248_warujaya_mbts.csv')
     #variate, target = st.columns(2)
     #choose the variate type of data
     variate = st.selectbox(
@@ -60,10 +60,10 @@ def demo_page():
         X_train = data.X_tr
         y_train = data.y_tr
         X_test = data.X_test
-        y_test = data.y_tr
+        y_test = data.y_test
         
         #must check if the data multivariable or not
-        i = target_dict(target)
+        i = target_dict[target]
         if variate=='Multivariable':
             # RF
             model_rf = RandomForestRegressor(n_estimators= 1400, 
@@ -73,6 +73,8 @@ def demo_page():
                                     max_depth= 100, 
                                     bootstrap= True, 
                                     random_state = 42)
+            X_train = X_train.reshape(X_train.shape[0], (X_train.shape[1]*X_train.shape[2]))
+            X_test = X_test.reshape(X_test.shape[0], (X_test.shape[1]*X_test.shape[2]))
             model_rf.fit(X_train, y_train)
             rf_pred = model_rf.predict(X_test)
             # SVR
@@ -80,13 +82,18 @@ def demo_page():
             model_svr.fit(X_train, y_train)
             svr_pred = model_svr.predict(X_test)
             # Evaluation
-            y_test = y_test.reset_index(drop=True)
+            y_test = y_test#.reset_index(drop=True)
             rf_mse = round(mean_squared_error(y_test, rf_pred),4)
             rf_mae = round(mean_absolute_error(y_test, rf_pred),4)
             rf_r2 = round(r2_score(y_test, rf_pred),4)
             svr_mse = round(mean_squared_error(y_test, svr_pred),4)
             svr_mae = round(mean_absolute_error(y_test, svr_pred),4)
             svr_r2 = round(r2_score(y_test, svr_pred),4)
+            eval_df = {
+                'Metrics' : ['MAE', 'MSE', 'R_Squared'],
+                'RF' : [rf_mae, rf_mse, rf_r2],
+                'SVR' : [svr_mae, svr_mse, svr_r2]
+            }
             # Plot RF
             fig = plt.figure(figsize=(20, 10))
             rows = 2
@@ -97,7 +104,7 @@ def demo_page():
             plt.title("RF Predictions for {}".format(target))
             plt.xlabel('Hours')
             plt.ylabel('Throughput (Scaled)')
-            plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(rf_mae, rf_mse, rf_r2))
+            #plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(rf_mae, rf_mse, rf_r2))
             plt.legend(loc='best')
             # Plot SVR
             fig.add_subplot(rows, columns, 2)
@@ -106,11 +113,13 @@ def demo_page():
             plt.title("SVR Predictions for {}".format(target))
             plt.xlabel('Hours')
             plt.ylabel('Throughput (Scaled)')
-            plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(svr_mae, svr_mse, svr_r2))                      
+            #plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(svr_mae, svr_mse, svr_r2))                      
             plt.legend(loc='best')
 
             plt.legend()
-            plt.show()
+            st.pyplot(fig)
+            #plt.show()
+            st.dataframe(eval_df)
         else:
             # ARIMA
             X = df[target].values
@@ -119,7 +128,7 @@ def demo_page():
             history = [x for x in train]
             model_arima = ARIMA(history, order=(AR[i],0,MA[i]))
             model_arima = model_arima.fit()
-            output_arima = model_arima.forecast()[:len(test)]
+            output_arima = model_arima.fittedvalues[:len(test)]
             # SARIMAX
             model_sarimax = SARIMAX(history,
                             order=(p[i], 0, 0),
@@ -127,7 +136,7 @@ def demo_page():
                             enforce_stationarity=False,
                             enforce_invertibility=False)
             model_sarimax = model_sarimax.fit()
-            output_sarimax = model_sarimax.get_forecast(steps=len(test)).predicted_mean
+            output_sarimax = model_sarimax.get_forecast(steps=180).predicted_mean
             # Evaluation
             arima_mse = round(mean_squared_error(test, output_arima),4)
             arima_mae = round(mean_absolute_error(test, output_arima),4)
@@ -135,6 +144,11 @@ def demo_page():
             sarimax_mse = round(mean_squared_error(test, output_sarimax),4)
             sarimax_mae = round(mean_absolute_error(test, output_sarimax),4)
             sarimax_r2 = round(r2_score(test, output_sarimax),4)
+            eval_df = {
+                'Metrics' : ['MAE', 'MSE', 'R_Squared'],
+                'ARIMA' : [arima_mae, arima_mse, arima_r2],
+                'SARIMAX' : [sarimax_mae, sarimax_mse, sarimax_r2]
+            }
             # Plot ARIMA
             fig = plt.figure(figsize=(20, 10))
             rows = 2
@@ -145,7 +159,7 @@ def demo_page():
             plt.title("ARIMA Predictions for {}".format(target))
             plt.xlabel('Hours')
             plt.ylabel('Throughput (Scaled)')
-            plt.text(225, np.min(test), "MAE: {}\nMSE: {}\nR^2 Score: {}".format(arima_mae, arima_mse, arima_r2))
+            #plt.text(225, np.min(test), "MAE: {}\nMSE: {}\nR^2 Score: {}".format(arima_mae, arima_mse, arima_r2))
             plt.legend(loc='best')
             # Plor SARIMAX
             fig.add_subplot(rows, columns, 2)
@@ -154,11 +168,13 @@ def demo_page():
             plt.title("SARIMAX Predictions for {}".format(target))
             plt.xlabel('Hours')
             plt.ylabel('Throughput (Scaled)')
-            plt.text(225, np.min(test), "MAE: {}\nMSE: {}\nR^2 Score: {}".format(sarimax_mae, sarimax_mse, sarimax_r2))                      
+            #plt.text(225, np.min(test), "MAE: {}\nMSE: {}\nR^2 Score: {}".format(sarimax_mae, sarimax_mse, sarimax_r2))                      
             plt.legend(loc='best')
 
             plt.legend()
-            plt.show()
+            st.pyplot(fig)
+            st.dataframe(eval_df)
+            #plt.show()
         
     else:
         st.error("Target is not numeric columns")
