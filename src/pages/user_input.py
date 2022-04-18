@@ -5,6 +5,7 @@ import streamlit as st
 from src.pages.filter_features import feature_sidebar
 from src.pages.filter_scaling import scaling_sidebar
 from src.pages.model_selection import model_page
+
 def user_page():
     # Code to read a single file 
     uploaded_file = st.sidebar.file_uploader("Choose a file", type = ['csv'])
@@ -14,6 +15,7 @@ def user_page():
         df = pd.read_csv(uploaded_file)
         variate, target = st.columns(2)
         #choose the variate type of data
+        st.header('Data Preprocessing')
         variate = st.selectbox(
             "What kind of data you want to use?",
             ['Univariable', 'Multivariable']

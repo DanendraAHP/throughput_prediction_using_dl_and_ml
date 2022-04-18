@@ -34,7 +34,7 @@ class Model_SKLearn():
         else: 
             return pd.DataFrame({
                 'y_original':list(data.y_test[:, 0]),
-                'y_predicted':list(y_pred[:, 0])
+                'y_predicted':list(y_pred)
             })
     def evaluate(self, data, scaled):
         if len(data.X_test.shape)>2:
@@ -58,9 +58,9 @@ class Model_SKLearn():
                 'Score' : [ori_mae, ori_mse, ori_r_squared]
             }
         else :
-            mae = mean_absolute_error(y_pred[:, 0], data.y_test)
-            mse = mean_squared_error(y_pred[:,0], data.y_test)
-            r_squared = r2_score(y_pred[:,0], data.y_test)
+            mae = mean_absolute_error(y_pred, data.y_test)
+            mse = mean_squared_error(y_pred, data.y_test)
+            r_squared = r2_score(y_pred, data.y_test)
             eval_holder = {
                 'Metrics' : ['MAE', 'MSE', 'R_Squared'],
                 'Score' : [mae, mse, r_squared]

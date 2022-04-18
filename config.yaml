@@ -1,7 +1,65 @@
+explanation_text:
+  RF: Random forests or random decision forests is an ensemble learning method for
+    classification, regression and other tasks that operates by constructing a multitude
+    of decision trees at training time. For classification tasks, the output of the
+    random forest is the class selected by most trees. For regression tasks, the mean
+    or average prediction of the individual trees is returned.[1][2] Random decision
+    forests correct for decision trees' habit of overfitting to their training set.
+  RF_max_depth: The maximum depth of the tree
+  RF_min_samples_split: "The minimum number of samples required to split an internal\
+    \ node:\n - If int, then consider min_samples_split as the minimum number.\n -\
+    \ If float, then min_samples_split is a fraction and ceil(min_samples_split *\
+    \ n_samples) are the minimum number of samples for each split."
+  RF_n_estimator: The number of trees in the forest.
+  SVR_C: Regularization parameter. The strength of the regularization is inversely
+    proportional to C. Must be strictly positive. The penalty is a squared l2 penalty.
+  SVR_degree: "Degree of the polynomial kernel function (\xE2\u20AC\u02DCpoly\xE2\u20AC\
+    \u2122). Ignored by all other kernels."
+  SVR_epsilon: Epsilon in the epsilon-SVR model. It specifies the epsilon-tube within
+    which no penalty is associated in the training loss function with points predicted
+    within a distance epsilon from the actual value.
+  SVR_kernel: A kernel is a function used in SVM for helping to solve problems. They
+    provide shortcuts to avoid complex calculations. The amazing thing about kernel
+    is that we can go to higher dimensions and perform smooth calculations with the
+    help of it. We can go up to an infinite number of dimensions using kernels. Sometimes,
+    we cannot have a hyperplane for certain problems. This problem arises when we
+    go up to higher dimensions and try to form a hyperplane. A kernel helps to form
+    the hyperplane in the higher dimension without raising the complexity.
+  SVR_paragraph_1: In machine learning, Support Vector Machines are supervised learning
+    models with associated learning algorithms that analyze data used for classification
+    and regression analysis. In Support Vector Regression, the straight line that
+    is required to fit the data is referred to as hyperplane.
+  SVR_paragraph_2: The objective of a support vector machine algorithm is to find
+    a hyperplane in an n-dimensional space that distinctly classifies the data points.
+    The data points on either side of the hyperplane that are closest to the hyperplane
+    are called Support Vectors. These influence the position and orientation of the
+    hyperplane and thus help build the SVM.
+  compare_all_model: " This method will compare all the machine learning and deep\
+    \ learning model. The model that will be compared is : \n Machine learning : \n\
+    \ - Support Vector Regression \n - Random Forest \n Deep Learning : \n - LSTM\
+    \ Model : with 2 LSTM hidden layer, the first layer will have 8 hidden unit while\
+    \ the second layer have 4 hidden unit \n - Dense Model : with 2 dense hidden layer,\
+    \ the first layer will have 8 hidden unit while the second layer have 4 hidden\
+    \ unit"
+  home: "Tugas Akhir Teknik Telekomunikasi \n - Danendra Athallariq Harya Putra 18118006\
+    \ \n - Rifqi Syahri Ramadhani 18118008"
+  tf_early_stop: optimization technique used to reduce overfitting without compromising
+    on model accuracy. The main idea behind early stopping is to stop training before
+    a model starts to overfit.
+  tf_loss: Method of evaluating how well specific algorithm models the given data.
+    If predictions deviates too much from actual results, loss function would cough
+    up a very large number. Gradually, with the help of some optimization function,
+    loss function learns to reduce the error in prediction.
+  tf_lr: ' Tuning parameter in an optimization algorithm that determines the step
+    size at each iteration while moving toward a minimum of a loss function.[1] Since
+    it influences to what extent newly acquired information overrides old information,
+    it metaphorically represents the speed at which a machine learning model learns'
+  tf_metric: Metrics to be evaluated by the model during training and testing
+  tf_optimizer: 'An optimizer is a function or an algorithm that modifies the attributes
+    of the neural network, such as weights and learning rate. Thus, it helps in reducing
+    the overall loss and improve the accuracy. '
+  tf_patience: The model will see the last n epochs, if at the last n epoch the model
+    don't improve then early stopping will activate
 model_tf:
-  layers:
-  - LSTM
-  - Dense
-  units:
-  - 8
-  - 8
+  layers: null
+  units: null
