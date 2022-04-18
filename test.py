@@ -1,7 +1,6 @@
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.datasets import make_regression
-X, y = make_regression(n_features=4, n_informative=2,
-                        random_state=0, shuffle=False)
-regr = RandomForestRegressor()
-regr.set_params(max_depth=2, random_state=0)
-regr.fit(X,y)
+from src.common.yaml_util import read_yaml_file
+from src.common.constant import PATH
+
+EXPLANATION_TEXT = read_yaml_file(PATH.config)
+EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
+print(EXPLANATION_TEXT['optimizer'])

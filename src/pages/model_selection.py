@@ -8,8 +8,13 @@ import pandas as pd
 from src.models.model_sklearn import Model_SKLearn
 from src.common.model_holder import sklearn_model
 import tensorflow as tf
+from src.common.yaml_util import read_yaml_file
+
+EXPLANATION_TEXT = read_yaml_file(PATH.config)
+EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
 
 def model_page(data, scaled):
+    st.header("Model Creation Page")
     method_select = st.sidebar.selectbox(
         "Select what method to use?",
         ['Machine Learning', 'Deep Learning', 'Statistic', 'Compare All Model']
@@ -19,7 +24,9 @@ def model_page(data, scaled):
     elif method_select == 'Deep Learning':
         model_tf_page(data)
     elif method_select == 'Compare All Model':
-        visualize_df, eval_df = compare_all_page(data, scaled)
+        st.info(EXPLANATION_TEXT['compare_all_model'])
+        if st.button("Compare all model"):
+            compare_all_page(data, scaled)
     elif method_select == 'Statistic' :
         st.write('Not yet implemented')
         # model_select = st.sidebar.selectbox(
@@ -32,6 +39,8 @@ def model_page(data, scaled):
         if method_select == 'Compare All Model':
             #evaluation and visualization
             with st.container():
+                visualize_df = pd.read_csv(PATH.visualize_df)
+                eval_df = pd.read_csv(PATH.eval_df)
                 st.header("Model Performance")
                 #for graphic
                 st.line_chart(visualize_df)
@@ -66,7 +75,6 @@ def compare_all_page(data, scaled):
         #create LSTM model
         model = Model_TF()
         model.create(data, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
-        print('---------LSTM-------------')
         visualize_df = model.visualize(data, scaled)
         eval_metric = model.evaluate(data, scaled)
         all_vis_df['y_original'] = visualize_df['y_original']
@@ -76,7 +84,6 @@ def compare_all_page(data, scaled):
         #create FNN model
         model = Model_TF()
         model.create(data, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
-        print('---------Dense-------------')
         visualize_df = model.visualize(data, scaled)
         eval_metric = model.evaluate(data, scaled)
         all_vis_df['Dense Prediction'] = visualize_df['y_predicted']
@@ -95,8 +102,9 @@ def compare_all_page(data, scaled):
         eval_metric = model.evaluate(data, scaled)
         all_vis_df['SVR Prediction'] = visualize_df['y_predicted']
         all_eval_df['SVR Score'] = eval_metric['Score']
-    st.success("All model has been trained")
-    return all_vis_df, all_eval_df
+        st.success("All model has been trained")
+        all_vis_df.to_csv(PATH.visualize_df)
+        all_eval_df.to_csv(PATH.eval_df)
 
 def model_sklearn_page(data):
     model_select = st.sidebar.selectbox(
@@ -106,20 +114,46 @@ def model_sklearn_page(data):
     model = Model_SKLearn(model_select)
     if model_select == 'Support Vector Regression':
         with st.container():
-            st.header('Model Hyperparameter')
+            #explanation
+            st.subheader('What is Support Vector Regression')
+            st.write(EXPLANATION_TEXT['SVR_paragraph_1'])
+            st.image(PATH.SVR_img)
+            st.write(EXPLANATION_TEXT['SVR_paragraph_2'])
+            #model hyperparameter
+            st.subheader('Model Hyperparameter')
             kernel = st.selectbox('Kernel', ['rbf', 'linear', 'poly'])
+            kernel_explanation = st.expander("See kernel explanation")
+            kernel_explanation.write(EXPLANATION_TEXT['SVR_kernel'])
+            degree = st.number_input('Polynom Degree', value=3)
+            degree_explanation = st.expander("See degree explanation")
+            degree_explanation.write(EXPLANATION_TEXT['SVR_degree'])
             c = st.number_input('Regularization', value=1)
+            c_explanation = st.expander("See C explanation")
+            c_explanation.write(EXPLANATION_TEXT['SVR_C'])
             epsilon = st.number_input('Epsilon', value=0.1)
+            epsilon_explanation = st.expander('See epsilon explanation')
+            epsilon_explanation.write(EXPLANATION_TEXT['SVR_epsilon'])
         if st.button('Finish Model Creation'):
             with st.spinner('Wait for the model to be trained'):
-                model.fit_and_save(data, kernel=kernel, C=c, epsilon=epsilon)
+                model.fit_and_save(data, kernel=kernel, C=c, epsilon=epsilon, degree=degree)
             st.success('Model has been created')
     else:
         with st.container():
-            st.header('Model Hyperparameter')
+            #model explanation
+            st.subheader('What is Support Vector Regression')
+            st.image(PATH.RF_img)
+            st.write(EXPLANATION_TEXT['RF'])
+            #model hyperparameter
+            st.subheader('Model Hyperparameter')
             n_estimator = int(st.number_input('Number of estimator', value=10, format='%d'))
+            n_estimator_explanation = st.expander("See number of estimator explanation")
+            n_estimator_explanation.write(EXPLANATION_TEXT['RF_n_estimator'])
             max_depth = int(st.number_input('Maximum depth', value=5, format='%d'))
-            min_samples_split = int(st.number_input('Minumum samples split', value=2, format='%d'))
+            max_depth_explanation = st.expander("See maximum depth explanation")
+            max_depth_explanation.write(EXPLANATION_TEXT['RF_max_depth'])
+            min_samples_split = int(st.number_input('Minimum samples split', value=2, format='%d'))
+            min_samples_split_explanation = st.expander("See minimum samples split explanation")
+            min_samples_split_explanation.write(EXPLANATION_TEXT['RF_min_samples_split'])
         if st.button('Finish Model Creation'):
             with st.spinner('Wait for the model to be trained'):
                 model.fit_and_save(data, n_estimators=n_estimator, max_depth=max_depth,min_samples_split=min_samples_split)
@@ -129,11 +163,11 @@ def model_tf_page(data):
     config_file = PATH.config
     #model creation
     with st.container():
-        st.header("Model Architecture")
+        st.subheader("Model Architecture")
         create_col1, create_col2 = st.columns([2, 1])
         with create_col1 :
-            layer_type_submit = st.selectbox('layer type', ['LSTM','Dense'])
-            layer_unit_submit = st.number_input('Number of hidden unit', value=1)
+            layer_type_submit = st.selectbox('Layer Type', ['LSTM','Dense'])
+            layer_unit_submit = st.number_input('Number of Hidden Unit', value=1)
         with create_col2 :
             layer_submit_button = st.button('Add to model')
             layer_remove_button = st.button('Remove last added layer')
@@ -151,19 +185,36 @@ def model_tf_page(data):
     model_tf_layer, model_tf_units = get_config(config_file)
     #model hyperparameter
     with st.container():
-        st.header("Model Hyperparameter")
+        st.subheader("Model Hyperparameter")
         epochs = int(st.number_input('Training Epochs', value=10, format='%d'))
-        optimizer = st.selectbox('What optimizer you want to use?', tf_optimizer_dict.keys())
-        lr = st.number_input('The learning value for optimizer', value=0.001, format='%f')
-        loss = st.selectbox('What loss function you want to use?', tf_losses_dict.keys())
-        metric = st.selectbox('What metrics you want to monitor?', tf_metrics_dict.keys())
+        hyp_col1, hyp_col2 = st.columns(2)
+        with hyp_col1:
+            st.subheader("Model Optimizer")
+            optimizer = st.selectbox('What optimizer you want to use?', tf_optimizer_dict.keys())
+            optimizer_explanation = st.expander('See Optimizer Explanation')
+            optimizer_explanation.write(EXPLANATION_TEXT['tf_optimizer'])
+            lr = st.number_input('The learning value for optimizer', value=0.001, format='%f')
+            lr_explanation = st.expander('See learning rate explanation')
+            lr_explanation.write(EXPLANATION_TEXT['tf_lr'])
+        with hyp_col2:
+            st.subheader("Model Monitoring")
+            loss = st.selectbox('What loss function you want to use?', tf_losses_dict.keys())
+            loss_explanation = st.expander('See loss function explanation')
+            loss_explanation.write(EXPLANATION_TEXT['tf_loss'])
+            metric = st.selectbox('What metrics you want to monitor?', tf_metrics_dict.keys())
+            metric_explanation = st.expander('Seen metrics to monitor explanation')
+            metric_explanation.write(EXPLANATION_TEXT['tf_metric'])
         early_stop = st.selectbox('Use early stopping', ['Yes', 'No'])
+        early_stop_explanation = st.expander("See early stopping explanation")
+        early_stop_explanation.write(EXPLANATION_TEXT['tf_early_stop'])
         monitor = tf_monitor_dict[loss]
         #will be rewrite if there are early stop
         patience = 0
         callback = False
         if early_stop == 'Yes':
-            patience = int(st.number_input('How much you want to wait before early stopping?', value=5, format='%d'))
+            patience = int(st.number_input('How much epoch you want to wait before early stopping?', value=5, format='%d'))
+            patience_explanation = st.expander("See patience explanation")
+            patience_explanation.write(EXPLANATION_TEXT['tf_patience'])
             callback = True
     #submit model
     model_submit_button = st.button('Finish the model creation and train it')
@@ -172,5 +223,6 @@ def model_tf_page(data):
             model = Model_TF()
             model.create(data, model_tf_layer, model_tf_units, epochs, loss, optimizer, metric, lr, monitor, callback, patience)
             clear_layer(config_file)
-        st.success('Model saved')
+        st.success('Model Created')
+
         

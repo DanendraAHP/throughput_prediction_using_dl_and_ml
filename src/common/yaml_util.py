@@ -4,9 +4,9 @@ def read_yaml_file(file):
     with open(file) as read_file:
         try:
             data = yaml.safe_load(read_file)  
+            return data
         except yaml.YAMLError as exc:
-            print(exc)
-    return data
+            return exc
 
 def write_yaml(dictionary, file):
     with open(file, 'w') as dump_file:
