@@ -84,12 +84,12 @@ def demo_page():
             svr_pred = model_svr.predict(X_test)
             #LSTM
             model = Model_TF()
-            model.create(X_train, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            model.create(data, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model.visualize(data, scaled=True)
             lstm_pred = visualize_df['y_predicted'].values
             #FNN
             model = Model_TF()
-            model.create(X_train, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            model.create(data, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model.visualize(data, scaled=True)
             dense_pred = visualize_df['y_predicted'].values
 
@@ -136,7 +136,7 @@ def demo_page():
             #plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(svr_mae, svr_mse, svr_r2))                      
             plt.legend(loc='best')
             # Plot LSTM
-            fig.add_subplot(rows, columns, 2)
+            fig.add_subplot(rows, columns, 3)
             plt.plot(y_test, color='blue', label='Test Data')
             plt.plot(lstm_pred, color='red', label='LSTM Prediction')
             plt.title("LSTM Predictions for {}".format(target))
@@ -145,7 +145,7 @@ def demo_page():
             #plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(svr_mae, svr_mse, svr_r2))                      
             plt.legend(loc='best')
             # Plot Dense
-            fig.add_subplot(rows, columns, 2)
+            fig.add_subplot(rows, columns, 4)
             plt.plot(y_test, color='blue', label='Test Data')
             plt.plot(dense_pred, color='red', label='Dense Prediction')
             plt.title("Dense Predictions for {}".format(target))
@@ -178,12 +178,12 @@ def demo_page():
 
             #LSTM
             model = Model_TF()
-            model.create(train, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            model.create(data, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model.visualize(data, scaled=True)
             lstm_pred = visualize_df['y_predicted'].values
             #FNN
             model = Model_TF()
-            model.create(train, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            model.create(data, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model.visualize(data, scaled=True)
             dense_pred = visualize_df['y_predicted'].values
 
@@ -194,12 +194,12 @@ def demo_page():
             sarimax_mse = round(mean_squared_error(test, output_sarimax),4)
             sarimax_mae = round(mean_absolute_error(test, output_sarimax),4)
             sarimax_r2 = round(r2_score(test, output_sarimax),4)
-            lstm_mse = round(mean_squared_error(y_test, lstm_pred),4)
-            lstm_mae = round(mean_absolute_error(y_test, lstm_pred),4)
-            lstm_r2 = round(r2_score(y_test, lstm_pred),4)
-            dense_mse = round(mean_squared_error(y_test, dense_pred),4)
-            dense_mae = round(mean_absolute_error(y_test, dense_pred),4)
-            dense_r2 = round(r2_score(y_test, dense_pred),4)
+            lstm_mse = round(mean_squared_error(test, lstm_pred),4)
+            lstm_mae = round(mean_absolute_error(test, lstm_pred),4)
+            lstm_r2 = round(r2_score(test, lstm_pred),4)
+            dense_mse = round(mean_squared_error(test, dense_pred),4)
+            dense_mae = round(mean_absolute_error(test, dense_pred),4)
+            dense_r2 = round(r2_score(test, dense_pred),4)
             eval_df = {
                 'Metrics' : ['MAE', 'MSE', 'R_Squared'],
                 'ARIMA' : [arima_mae, arima_mse, arima_r2],
@@ -229,8 +229,8 @@ def demo_page():
             #plt.text(225, np.min(test), "MAE: {}\nMSE: {}\nR^2 Score: {}".format(sarimax_mae, sarimax_mse, sarimax_r2))                      
             plt.legend(loc='best')
             # Plot LSTM
-            fig.add_subplot(rows, columns, 2)
-            plt.plot(y_test, color='blue', label='Test Data')
+            fig.add_subplot(rows, columns, 3)
+            plt.plot(test, color='blue', label='Test Data')
             plt.plot(lstm_pred, color='red', label='LSTM Prediction')
             plt.title("LSTM Predictions for {}".format(target))
             plt.xlabel('Hours')
@@ -238,8 +238,8 @@ def demo_page():
             #plt.text(12, 2, "MAE: {}\nMSE: {}\nR^2 Score: {}".format(svr_mae, svr_mse, svr_r2))                      
             plt.legend(loc='best')
             # Plot Dense
-            fig.add_subplot(rows, columns, 2)
-            plt.plot(y_test, color='blue', label='Test Data')
+            fig.add_subplot(rows, columns, 4)
+            plt.plot(test, color='blue', label='Test Data')
             plt.plot(dense_pred, color='red', label='Dense Prediction')
             plt.title("Dense Predictions for {}".format(target))
             plt.xlabel('Hours')
