@@ -3,10 +3,11 @@ from src.pages.user_input import user_page
 from src.common.constant import PATH
 from src.common.yaml_util import read_yaml_file
 from src.pages.demo import demo_page
-
+from src.utils.prepare import prepare_folder
 
 EXPLANATION_TEXT = read_yaml_file(PATH.config)
 EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
+prepare_folder()
 ##############################sidebar##############################
 select_page = st.sidebar.selectbox(
     "App Navigation",
