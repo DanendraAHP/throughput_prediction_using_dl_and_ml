@@ -91,10 +91,10 @@ def statistic_page(data):
             ['ARIMA', 'SARIMAX']
     )
     with st.container():
-        p = st.number_input('Autoregressive', value=0)
+        p = st.number_input('Autoregressive', value=1)
         p_explanation = st.expander("See Autoregressive Explanation")
         p_explanation.write(EXPLANATION_TEXT['arima_p'])
-        q = st.number_input('Moving Average', value=0)
+        q = st.number_input('Moving Average', value=1)
         q_explanation = st.expander("See Moving Average Explanation")
         q_explanation.write(EXPLANATION_TEXT['arima_q'])
         d = st.number_input('Differences', value=0)
@@ -107,10 +107,10 @@ def statistic_page(data):
                 st.success("Model has been trained")
         else :
             #SARIMAX Only
-            P = st.number_input('Seasonal Component Autoregressive', value=0)
+            P = st.number_input('Seasonal Component Autoregressive', value=2)
             P_explanation = st.expander("See Seasonal Component Autoregressive Explanation")
             P_explanation.write(EXPLANATION_TEXT['sarimax_P'])
-            Q = st.number_input('Seasonal Component Moving Average', value=0)
+            Q = st.number_input('Seasonal Component Moving Average', value=1)
             Q_explanation = st.expander("See Seasonal Component Moving Average Explanation")
             Q_explanation.write(EXPLANATION_TEXT['sarimax_Q'])
             D = st.number_input('Seasonal Component Differences', value=0)

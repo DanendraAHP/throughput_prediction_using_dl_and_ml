@@ -29,7 +29,7 @@ class Model_Stat():
         y_pred = self.model.fittedvalues[self.data.X_tr.shape[0]:]
         if scaled:
             #original
-            ori_predict = self.data.transformer.inverse_transform(y_pred)
+            ori_predict = self.data.transformer.inverse_transform(y_pred.reshape(-1,1))
             ori_y = self.data.transformer.inverse_transform(self.data.y_test.reshape(-1,1))
             #calculate mae
             mae = mean_absolute_error(ori_y, ori_predict)
