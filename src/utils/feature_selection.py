@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.feature_selection import SelectFromModel, f_regression, RFE, SelectKBest
-from sklearn.svm import SVR
+from src.common.model_holder import sklearn_model
 from sklearn.decomposition import PCA
 
 class Corr_selection():
@@ -70,8 +70,8 @@ def feature_selection(X, y, how, **params):
     """
     selection_type = {
         'SelectKBest' : SelectKBest(),#univariate selection
-        'RFE' : RFE(estimator = SVR(kernel="linear")),#recursive feature extraction
-        'SelectFromModel' : SelectFromModel(estimator = SVR(kernel="linear")),#feature importance
+        'RFE' : RFE(estimator = sklearn_model['Random Forest']),#recursive feature extraction
+        'SelectFromModel' : SelectFromModel(estimator = sklearn_model['Random Forest']),#feature importance
         'Correlation' : Corr_selection(),
         'PCA' : PCA()
     }

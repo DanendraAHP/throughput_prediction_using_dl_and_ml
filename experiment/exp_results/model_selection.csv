@@ -1,0 +1,9 @@
+model,data type,target,MAE,MSE,R_Squared,MAPE,MSLE
+LSTM,Univariable,dl_avg,1.532,3.834,0.026,0.207,0.049
+FNN,Univariable,dl_avg,1.508,3.784,0.038,0.203,0.048
+LSTM,Multivariable,dl_avg,1.735,5.053,-0.285,0.228,0.063
+FNN,Multivariable,dl_avg,1.486,3.731,0.052,0.198,0.048
+LSTM,Univariable,ul_avg,0.237,0.093,-0.008,0.292,0.024
+FNN,Univariable,ul_avg,0.228,0.087,0.061,0.276,0.022
+LSTM,Multivariable,ul_avg,0.293,0.152,-0.645,0.348,0.035
+FNN,Multivariable,ul_avg,0.24,0.094,-0.017,0.286,0.024

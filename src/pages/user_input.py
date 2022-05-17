@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 from src.utils.data import Dataset
 import streamlit as st
 from src.pages.filter_features import feature_sidebar

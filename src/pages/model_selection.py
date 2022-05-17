@@ -1,6 +1,4 @@
-from re import S
 import streamlit as st
-from tensorflow import keras
 from src.models.create_model_tf import get_config, add_layer, remove_layer, clear_layer,check_layer
 from src.common.hyperparameter_holder import tf_losses_dict, tf_metrics_dict, tf_monitor_dict, tf_optimizer_dict
 from src.common.constant import PATH
@@ -10,7 +8,8 @@ from src.models.model_stat import Model_Stat
 import pandas as pd
 from src.common.model_holder import sklearn_model
 from src.common.yaml_util import read_yaml_file
-
+from src.pages.visualize import visualize_page
+from src.pages.infer import infer_page
 
 EXPLANATION_TEXT = read_yaml_file(PATH.config)
 EXPLANATION_TEXT = EXPLANATION_TEXT['explanation_text']
@@ -34,41 +33,56 @@ def model_page(data, scaled, variate, time_lag):
             statistic_page(data)
         else:
             st.warning("Please make your data to univariable with timelag = 1")
-    eval = st.button('evaluate the model')
+    eval = st.checkbox('evaluate the model')
     if eval:
         #for compare all model
         if method_select == 'Compare All Model':
-            #evaluation and visualization
-            with st.container():
-                visualize_df = pd.read_csv(PATH.visualize_df)
-                eval_df = pd.read_csv(PATH.eval_df)
-                st.header("Model Performance")
-                #for graphic
-                st.line_chart(visualize_df)
-                #for eval metric
-                st.dataframe(pd.DataFrame(eval_df))
+            visualize_page(compared_all=True)
         else:
             #for tf model
             if method_select == 'Deep Learning':
-                model = Model_TF()
+                model = Model_TF(data)
                 model.load()
+                visualize_page(model=model, scaled=scaled)
             #for sklearn model
             elif method_select == 'Machine Learning':
-                model = Model_SKLearn('Random Forest')
+                model = Model_SKLearn('Random Forest', data)
                 model.load()
+                visualize_page(model=model, scaled=scaled)
             #for statsmodel
             elif method_select == 'Statistic':
-                model = Model_Stat(data)
-                model.load()
-            #evaluation and visualization
-            with st.container():
-                st.header("Model Performance")
-                #for graphic
-                visualize_df = model.visualize(data, scaled)
-                st.line_chart(visualize_df)
-                #for eval metric
-                eval_metric = model.evaluate(data, scaled)
-                st.dataframe(pd.DataFrame(eval_metric))
+                if variate == 'Univariable' and time_lag == 1:
+                    model = Model_Stat(data)
+                    model.load()
+                    visualize_page(model=model, scaled=scaled)
+                else:
+                    st.warning("Please make your data to univariable with timelag = 1")
+    #infer = st.checkbox('Forecast with model')
+    # if infer:
+    #     #check if the data univariate
+    #     if variate == 'Univariable':
+    #         #for tf model
+    #         if method_select == 'Deep Learning':
+    #             model = Model_TF(data)
+    #             model.load()
+    #             infer_page(model=model, scaled=scaled)
+    #         #for sklearn model
+    #         elif method_select == 'Machine Learning':
+    #             model = Model_SKLearn('Random Forest', data)
+    #             model.load()
+    #             infer_page(model=model, scaled=scaled)
+    #         #for statsmodel
+    #         elif method_select == 'Statistic':
+    #             if time_lag == 1:
+    #                 model = Model_Stat(data)
+    #                 model.load()
+    #                 infer_page(model=model, scaled=scaled)
+    #             else:
+    #                 st.warning("Please make your data to univariable with timelag = 1")
+    #         else:
+    #             st.warning("Please Select Another Method for Forecasting")
+    #     else:
+    #         st.error('Please make your data univariable first')
 
 def statistic_page(data):
     model_select = st.sidebar.selectbox(
@@ -115,33 +129,33 @@ def compare_all_page(data, scaled, variate, time_lag):
         all_vis_df = pd.DataFrame()
         all_eval_df = pd.DataFrame()
         #create LSTM model
-        model = Model_TF()
-        model.create(data, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
-        visualize_df = model.visualize(data, scaled)
-        eval_metric = model.evaluate(data, scaled)
+        model = Model_TF(data)
+        model.create(['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+        visualize_df = model.visualize(scaled)
+        eval_metric = model.evaluate(scaled)
         all_vis_df['y_original'] = visualize_df['y_original']
         all_vis_df['LSTM Prediction'] = visualize_df['y_predicted']
         all_eval_df['Metrics'] = eval_metric['Metrics']
         all_eval_df['LSTM Score'] = eval_metric['Score']
         #create FNN model
-        model = Model_TF()
-        model.create(data, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
-        visualize_df = model.visualize(data, scaled)
-        eval_metric = model.evaluate(data, scaled)
+        model = Model_TF(data)
+        model.create(['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+        visualize_df = model.visualize(scaled)
+        eval_metric = model.evaluate(scaled)
         all_vis_df['Dense Prediction'] = visualize_df['y_predicted']
         all_eval_df['Dense Score'] = eval_metric['Score']
         #Create RF Model
-        model = Model_SKLearn("Random Forest")
-        model.fit_and_save(data, n_estimators=10, max_depth=5,min_samples_split=2)
-        visualize_df = model.visualize(data, scaled)
-        eval_metric = model.evaluate(data, scaled)
+        model = Model_SKLearn("Random Forest", data)
+        model.fit_and_save(n_estimators=10, max_depth=5,min_samples_split=2)
+        visualize_df = model.visualize(scaled)
+        eval_metric = model.evaluate(scaled)
         all_vis_df['RF Prediction'] = visualize_df['y_predicted']
         all_eval_df['RF Score'] = eval_metric['Score']
         #Create SVR Model
-        model = Model_SKLearn("Support Vector Regression")
-        model.fit_and_save(data, kernel='rbf', C=1, epsilon=0.1)
-        visualize_df = model.visualize(data, scaled)
-        eval_metric = model.evaluate(data, scaled)
+        model = Model_SKLearn("Support Vector Regression", data)
+        model.fit_and_save(kernel='rbf', C=1, epsilon=0.1)
+        visualize_df = model.visualize(scaled)
+        eval_metric = model.evaluate(scaled)
         all_vis_df['SVR Prediction'] = visualize_df['y_predicted']
         all_eval_df['SVR Score'] = eval_metric['Score']
         if variate == 'Univariable' and time_lag == 1:
@@ -171,7 +185,7 @@ def model_sklearn_page(data):
             "Select what model to use?",
             sklearn_model.keys()
     )
-    model = Model_SKLearn(model_select)
+    model = Model_SKLearn(model_select, data)
     if model_select == 'Support Vector Regression':
         with st.container():
             #explanation
@@ -195,7 +209,7 @@ def model_sklearn_page(data):
             epsilon_explanation.write(EXPLANATION_TEXT['SVR_epsilon'])
         if st.button('Finish Model Creation'):
             with st.spinner('Wait for the model to be trained'):
-                model.fit_and_save(data, kernel=kernel, C=c, epsilon=epsilon, degree=degree)
+                model.fit_and_save(kernel=kernel, C=c, epsilon=epsilon, degree=degree)
             st.success('Model has been created')
     else:
         with st.container():
@@ -216,7 +230,7 @@ def model_sklearn_page(data):
             min_samples_split_explanation.write(EXPLANATION_TEXT['RF_min_samples_split'])
         if st.button('Finish Model Creation'):
             with st.spinner('Wait for the model to be trained'):
-                model.fit_and_save(data, n_estimators=n_estimator, max_depth=max_depth,min_samples_split=min_samples_split)
+                model.fit_and_save(n_estimators=n_estimator, max_depth=max_depth,min_samples_split=min_samples_split)
             st.success('Model has been created')
 
 def model_tf_page(data):
@@ -280,8 +294,8 @@ def model_tf_page(data):
     model_submit_button = st.button('Finish the model creation and train it')
     if model_submit_button:
         with st.spinner('Wait for the model to be trained'):
-            model = Model_TF()
-            model.create(data, model_tf_layer, model_tf_units, epochs, loss, optimizer, metric, lr, monitor, callback, patience)
+            model = Model_TF(data)
+            model.create(model_tf_layer, model_tf_units, epochs, loss, optimizer, metric, lr, monitor, callback, patience)
             clear_layer(config_file)
         st.success('Model Created')
 

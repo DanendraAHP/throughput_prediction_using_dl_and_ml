@@ -1,0 +1,5 @@
+normalize,target,MAE,MSE,R_Squared,MAPE,MSLE
+True,dl_avg,1.531,3.836,0.025,0.206,0.049
+True,ul_avg,0.234,0.09,0.025,0.293,0.023
+False,dl_avg,1.572,4.115,-0.046,0.21,0.053
+False,ul_avg,0.242,0.095,-0.025,0.308,0.024
