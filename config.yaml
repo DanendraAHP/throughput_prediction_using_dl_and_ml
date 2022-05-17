@@ -1,26 +1,53 @@
 explanation_text:
+  FNN: 'A feedforward neural network (FNN) is an artificial neural network wherein
+    connections between the nodes do not form a cycle. As such, it is different from
+    its descendant: recurrent neural networks.The feedforward neural network was the
+    first and simplest type of artificial neural network devised. In this network,
+    the information moves in only one direction forward from the input nodes, through
+    the hidden nodes (if any) and to the output nodes. There are no cycles or loops
+    in the network.'
+  LSTM: Long short-term memory (LSTM) is an artificial neural network used in the
+    fields of artificial intelligence and deep learning. Unlike standard feedforward
+    neural networks, LSTM has feedback connections. Such a recurrent neural network
+    can process not only single data points (such as images), but also entire sequences
+    of data (such as speech or video). For example, LSTM is applicable to tasks such
+    as unsegmented, connected handwriting recognition, speech recognition, machine
+    translation, robot control, video games, and healthcare. A common LSTM unit is
+    composed of a cell, an input gate, an output gate and a forget gate. The cell
+    remembers values over arbitrary time intervals and the three gates regulate the
+    flow of information into and out of the cell.
   RF: Random forests or random decision forests is an ensemble learning method for
     classification, regression and other tasks that operates by constructing a multitude
     of decision trees at training time. For classification tasks, the output of the
     random forest is the class selected by most trees. For regression tasks, the mean
     or average prediction of the individual trees is returned.[1][2] Random decision
     forests correct for decision trees' habit of overfitting to their training set.
+  RF_bootstrap: Whether bootstrap samples are used when building trees. If False,
+    the whole dataset is used to build each tree.
   RF_max_depth: The maximum depth of the tree
+  RF_max_samples: If bootstrap is True, the number of samples to draw from X to train
+    each base estimator.
+  RF_min_samples_leaf: The minimum number of samples required to be at a leaf node.
+    A split point at any depth will only be considered if it leaves at least min_samples_leaf
+    training samples in each of the left and right branches. This may have the effect
+    of smoothing the model, especially in regression.
   RF_min_samples_split: "The minimum number of samples required to split an internal\
     \ node:\n - If int, then consider min_samples_split as the minimum number.\n -\
     \ If float, then min_samples_split is a fraction and ceil(min_samples_split *\
     \ n_samples) are the minimum number of samples for each split."
   RF_n_estimator: The number of trees in the forest.
-  RF_min_samples_leaf : "The minimum number of samples required to be at a leaf node. A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches. This may have the effect of smoothing the model, especially in regression."
-  RF_bootstrap : Whether bootstrap samples are used when building trees. If False, the whole dataset is used to build each tree.
-  RF_max_samples : If bootstrap is True, the number of samples to draw from X to train each base estimator.
   SVR_C: Regularization parameter. The strength of the regularization is inversely
     proportional to C. Must be strictly positive. The penalty is a squared l2 penalty.
+  SVR_coef0: Independent term in kernel function. It is only significant in poly and
+    sigmoid.
   SVR_degree: "Degree of the polynomial kernel function (\xE2\u20AC\u02DCpoly\xE2\u20AC\
     \u2122). Ignored by all other kernels."
   SVR_epsilon: Epsilon in the epsilon-SVR model. It specifies the epsilon-tube within
     which no penalty is associated in the training loss function with points predicted
     within a distance epsilon from the actual value.
+  SVR_gamma: "Kernel coefficient for rbf, poly and sigmoid.\n - if gamma='scale' (default)\
+    \ is passed then it uses 1 / (n_features * X.var()) as value of gamma,\n - if\
+    \ auto, uses 1 / n_features."
   SVR_kernel: A kernel is a function used in SVM for helping to solve problems. They
     provide shortcuts to avoid complex calculations. The amazing thing about kernel
     is that we can go to higher dimensions and perform smooth calculations with the
@@ -28,10 +55,6 @@ explanation_text:
     we cannot have a hyperplane for certain problems. This problem arises when we
     go up to higher dimensions and try to form a hyperplane. A kernel helps to form
     the hyperplane in the higher dimension without raising the complexity.
-  SVR_coef0: Independent term in kernel function. It is only significant in poly and sigmoid.
-  SVR_gamma: "Kernel coefficient for rbf, poly and sigmoid.\n
-              - if gamma='scale' (default) is passed then it uses 1 / (n_features * X.var()) as value of gamma,\n
-              - if auto, uses 1 / n_features."
   SVR_paragraph_1: In machine learning, Support Vector Machines are supervised learning
     models with associated learning algorithms that analyze data used for classification
     and regression analysis. In Support Vector Regression, the straight line that
@@ -76,11 +99,6 @@ explanation_text:
     the overall loss and improve the accuracy. '
   tf_patience: The model will see the last n epochs, if at the last n epoch the model
     don't improve then early stopping will activate
-<<<<<<< HEAD
-  FNN : "A feedforward neural network (FNN) is an artificial neural network wherein connections between the nodes do not form a cycle. As such, it is different from its descendant: recurrent neural networks.The feedforward neural network was the first and simplest type of artificial neural network devised. In this network, the information moves in only one direction forward from the input nodes, through the hidden nodes (if any) and to the output nodes. There are no cycles or loops in the network."
-  LSTM : "Long short-term memory (LSTM) is an artificial neural network used in the fields of artificial intelligence and deep learning. Unlike standard feedforward neural networks, LSTM has feedback connections. Such a recurrent neural network can process not only single data points (such as images), but also entire sequences of data (such as speech or video). For example, LSTM is applicable to tasks such as unsegmented, connected handwriting recognition, speech recognition, machine translation, robot control, video games, and healthcare. A common LSTM unit is composed of a cell, an input gate, an output gate and a forget gate. The cell remembers values over arbitrary time intervals and the three gates regulate the flow of information into and out of the cell."
-=======
->>>>>>> 615aaf98d654dd6c6234cffd52e3996b2f34fdea
 model_tf:
   layers: null
   units: null

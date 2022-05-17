@@ -315,6 +315,11 @@ def model_tf_page(data):
     if layer_clear_button:
         clear_layer(config_file)
     model_tf_layer, model_tf_units = get_config(config_file)
+    with st.container():
+        st.write('Current Model Architecture have this layer')
+        st.write(model_tf_layer)
+        st.write('Each layer have this many nodes')
+        st.write(model_tf_units)
     #model hyperparameter
     with st.container():
         st.subheader("Model Hyperparameter")
