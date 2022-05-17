@@ -44,7 +44,7 @@ class Model_TF():
                     self.model.add(tf.keras.layers.Flatten())
         self.model.add(tf.keras.layers.Dense(1))
         self.compile_and_fit(epochs, loss, optimizer, metrics, lr, monitor, callback, patience)
-        #self.save()
+        self.save()
 
     def compile_and_fit(self, epochs, loss, optimizer, metrics, lr, monitor, callback, patience):
         #set the optimizer and their lr

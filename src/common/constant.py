@@ -13,6 +13,8 @@ class PATH:
     #img file
     RF_img = os.path.join(img, 'Random_forest.png')
     SVR_img = os.path.join(img, 'SVR.png')
+    FNN_img = os.path.join(img, 'fnn.png')
+    LSTM_img = os.path.join(img, 'LSTM.png')
     #csv file
     eval_df = os.path.join(csv, 'eval_df.csv')
     visualize_df = os.path.join(csv, 'visualize_df.csv')

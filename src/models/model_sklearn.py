@@ -48,11 +48,11 @@ class Model_SKLearn():
             ori_predict = self.data.transformer.inverse_transform(y_pred.reshape(-1, 1))
             ori_y = self.data.transformer.inverse_transform(self.data.y_test.reshape(-1,1))           
             #calculate mae
-            ori_mae = mean_absolute_error(ori_y, ori_predict)
+            mae = mean_absolute_error(ori_y, ori_predict)
             #calculate mse
-            ori_mse = mean_squared_error(ori_predict, ori_y)
+            mse = mean_squared_error(ori_predict, ori_y)
             #calculate r-squared
-            ori_r_squared = r2_score(ori_predict, ori_y)
+            r_squared = r2_score(ori_predict, ori_y)
             #calculate MAPE
             mape = mean_absolute_percentage_error(ori_y, ori_predict)
             #calculate msle

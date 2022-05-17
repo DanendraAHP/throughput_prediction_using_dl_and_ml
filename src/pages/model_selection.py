@@ -1,3 +1,4 @@
+from PIL import Image
 import streamlit as st
 from src.models.create_model_tf import get_config, add_layer, remove_layer, clear_layer,check_layer
 from src.common.hyperparameter_holder import tf_losses_dict, tf_metrics_dict, tf_monitor_dict, tf_optimizer_dict
@@ -33,7 +34,7 @@ def model_page(data, scaled, variate, time_lag):
             statistic_page(data)
         else:
             st.warning("Please make your data to univariable with timelag = 1")
-    eval = st.checkbox('evaluate the model')
+    eval = st.button('evaluate the model')
     if eval:
         #for compare all model
         if method_select == 'Compare All Model':
@@ -189,52 +190,109 @@ def model_sklearn_page(data):
     if model_select == 'Support Vector Regression':
         with st.container():
             #explanation
+            exp_left, exp_right = st.columns(2)
             st.subheader('What is Support Vector Regression')
             st.write(EXPLANATION_TEXT['SVR_paragraph_1'])
-            st.image(PATH.SVR_img)
+            image = Image.open(PATH.SVR_img)
+            st.image(image)
             st.write(EXPLANATION_TEXT['SVR_paragraph_2'])
             #model hyperparameter
             st.subheader('Model Hyperparameter')
-            kernel = st.selectbox('Kernel', ['rbf', 'linear', 'poly'])
-            kernel_explanation = st.expander("See kernel explanation")
-            kernel_explanation.write(EXPLANATION_TEXT['SVR_kernel'])
-            degree = st.number_input('Polynom Degree', value=3)
-            degree_explanation = st.expander("See degree explanation")
-            degree_explanation.write(EXPLANATION_TEXT['SVR_degree'])
-            c = st.number_input('Regularization', value=1)
-            c_explanation = st.expander("See C explanation")
-            c_explanation.write(EXPLANATION_TEXT['SVR_C'])
-            epsilon = st.number_input('Epsilon', value=0.1)
-            epsilon_explanation = st.expander('See epsilon explanation')
-            epsilon_explanation.write(EXPLANATION_TEXT['SVR_epsilon'])
+            with exp_left:
+                kernel = st.selectbox('Kernel', ['rbf', 'linear', 'poly'])
+                kernel_explanation = st.expander("See kernel explanation")
+                kernel_explanation.write(EXPLANATION_TEXT['SVR_kernel'])
+                degree = st.number_input('Polynom Degree', value=3)
+                degree_explanation = st.expander("See degree explanation")
+                degree_explanation.write(EXPLANATION_TEXT['SVR_degree'])
+                c = st.number_input('Regularization', value=1)
+                c_explanation = st.expander("See C explanation")
+                c_explanation.write(EXPLANATION_TEXT['SVR_C'])
+            with exp_right:
+                epsilon = st.number_input('Epsilon', value=0.1)
+                epsilon_explanation = st.expander('See epsilon explanation')
+                epsilon_explanation.write(EXPLANATION_TEXT['SVR_epsilon'])
+                coef0 = st.number_input('Independent term in kernel function')
+                coef0_explanation = st.expander("See coef 0 explanation")
+                coef0_explanation.write(EXPLANATION_TEXT['SVR_coef0'])
+                gamma = st.selectbox('Kernel coeficient', ('scale', 'auto'))
+                gamma_explanation = st.expander("See gamma explanation")
+                gamma_explanation.write(EXPLANATION_TEXT['SVR_gamma'])
         if st.button('Finish Model Creation'):
             with st.spinner('Wait for the model to be trained'):
-                model.fit_and_save(kernel=kernel, C=c, epsilon=epsilon, degree=degree)
+                model.fit_and_save(
+                    kernel=kernel, 
+                    C=c, 
+                    epsilon=epsilon, 
+                    degree=degree,
+                    coef0 = coef0,
+                    gamma = gamma
+                )
             st.success('Model has been created')
     else:
         with st.container():
             #model explanation
+            image = Image.open(PATH.RF_img)
             st.subheader('What is Random Forest')
-            st.image(PATH.RF_img)
+            st.image(image)
             st.write(EXPLANATION_TEXT['RF'])
             #model hyperparameter
+            exp_left, exp_right = st.columns(2)
             st.subheader('Model Hyperparameter')
-            n_estimator = int(st.number_input('Number of estimator', value=10, format='%d'))
-            n_estimator_explanation = st.expander("See number of estimator explanation")
-            n_estimator_explanation.write(EXPLANATION_TEXT['RF_n_estimator'])
-            max_depth = int(st.number_input('Maximum depth', value=5, format='%d'))
-            max_depth_explanation = st.expander("See maximum depth explanation")
-            max_depth_explanation.write(EXPLANATION_TEXT['RF_max_depth'])
-            min_samples_split = int(st.number_input('Minimum samples split', value=2, format='%d'))
-            min_samples_split_explanation = st.expander("See minimum samples split explanation")
-            min_samples_split_explanation.write(EXPLANATION_TEXT['RF_min_samples_split'])
+            with exp_left:
+                n_estimator = int(st.number_input('Number of estimator', value=10, format='%d'))
+                n_estimator_explanation = st.expander("See number of estimator explanation")
+                n_estimator_explanation.write(EXPLANATION_TEXT['RF_n_estimator'])
+                max_depth = int(st.number_input('Maximum depth', value=5, format='%d'))
+                max_depth_explanation = st.expander("See maximum depth explanation")
+                max_depth_explanation.write(EXPLANATION_TEXT['RF_max_depth'])
+                min_samples_split = int(st.number_input('Minimum samples split', value=2, format='%d'))
+                min_samples_split_explanation = st.expander("See minimum samples split explanation")
+                min_samples_split_explanation.write(EXPLANATION_TEXT['RF_min_samples_split'])
+            with exp_right:
+                min_samples_leaf = int(st.number_input('Number of samples at leaf node', value=1, format='%d'))
+                min_samples_leaf_explanation = st.expander("See min samples leaf explanation")
+                min_samples_leaf_explanation.write(EXPLANATION_TEXT['RF_min_samples_leaf'])
+                bootstrap = st.selectbox('Use bootstrap?', (True, False))
+                bootstrap_explanation = st.expander("See bootstrap explanation")
+                bootstrap_explanation.write(EXPLANATION_TEXT['RF_bootstrap'])
+                max_samples = int(st.number_input('Number of samples to train estimator', value=data.X_tr.shape[0]//5, format='%d'))
+                max_samples_explanation = st.expander("See max samples explanation")
+                max_samples_explanation.write(EXPLANATION_TEXT['RF_max_samples'])
+
         if st.button('Finish Model Creation'):
             with st.spinner('Wait for the model to be trained'):
-                model.fit_and_save(n_estimators=n_estimator, max_depth=max_depth,min_samples_split=min_samples_split)
+                if bootstrap==True:
+                    model.fit_and_save(
+                        n_estimators=n_estimator, 
+                        max_depth=max_depth,
+                        min_samples_split=min_samples_split,
+                        min_samples_leaf = min_samples_leaf,
+                        bootstrap = bootstrap,
+                        max_samples = max_samples
+                    )
+                else:
+                    model.fit_and_save(
+                        n_estimators=n_estimator, 
+                        max_depth=max_depth,
+                        min_samples_split=min_samples_split,
+                        min_samples_leaf = min_samples_leaf,
+                        bootstrap = bootstrap,
+                    )
             st.success('Model has been created')
 
 def model_tf_page(data):
     config_file = PATH.config
+    #model explanation
+    with st.container():
+        st.subheader('What is Feedforward neural network (FNN)')
+        st.write(EXPLANATION_TEXT['FNN'])
+        image = Image.open(PATH.FNN_img)
+        st.image(image)
+        st.subheader('What is Long Short-Term Memory (LSTM)')
+        st.write(EXPLANATION_TEXT['LSTM'])
+        image = Image.open(PATH.LSTM_img)
+        st.image(image)
     #model creation
     with st.container():
         st.subheader("Model Architecture")
