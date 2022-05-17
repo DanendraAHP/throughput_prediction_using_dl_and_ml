@@ -19,7 +19,11 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_log_error
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import r2_score
+<<<<<<< HEAD
 from src.models.model_stat import Model_Stat
+=======
+from throughput_prediction_using_dl_and_ml.src.models.model_stat import Model_Stat
+>>>>>>> 0b8306d62660aaf93b01befaffc8a4c80c9b780d
 
 # For ARIMA (order: dl_avg, ul_avg, dl_peak, ul_peak)
 p_ar = {'dl_avg':1, 'ul_avg':1, 'dl_peak':1, 'ul_peak':3}
@@ -72,12 +76,37 @@ def demo_page():
         #must check if the data multivariable or not
         i = target_dict[target]
         if variate=='Multivariable':
+<<<<<<< HEAD
             #LSTM
             model_lstm = Model_TF(data)
             model_lstm.create(['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model_lstm.visualize(scaled=True)
+=======
+            # RF
+            model_rf = Model_SKLearn('RF', data).fit_and_save(n_estimators= 1400, 
+                                                            min_samples_split= 2, 
+                                                            min_samples_leaf= 1, 
+                                                            max_features= 'auto', 
+                                                            max_depth= 100, 
+                                                            bootstrap= True, 
+                                                            random_state = 42)
+            visualize_df = model_rf.visualize(scaled=scale)
+            rf_pred = visualize_df['y_predicted'].values
+            rf_pred = data.transformer.inverse_transform(rf_pred.reshape(-1, 1))
+            # SVR
+            model_svr = Model_SKLearn('SVR', data).fit_and_save(kernel='linear')
+            visualize_df = model_svr.visualize(scaled=scale)
+            svr_pred = visualize_df['y_predicted'].values
+            svr_pred = data.transformer.inverse_transform(svr_pred.reshape(-1, 1))
+            #LSTM
+            model_lstm = Model_TF()
+            model_lstm.create(data, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            visualize_df = model_lstm.visualize(data, scaled=True)
+>>>>>>> 0b8306d62660aaf93b01befaffc8a4c80c9b780d
             lstm_pred = visualize_df['y_predicted'].values
+            lstm_pred = data.transformer.inverse_transform(lstm_pred.reshape(-1, 1))
             #FNN
+<<<<<<< HEAD
             model_dense = Model_TF(data)
             model_dense.create(['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model_dense.visualize(scaled=True)
@@ -101,6 +130,13 @@ def demo_page():
             visualize_df = model_svr.visualize(scaled=scale)
             svr_pred = visualize_df['y_predicted'].values
             
+=======
+            model_dense = Model_TF()
+            model_dense.create(data, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            visualize_df = model_dense.visualize(data, scaled=True)
+            dense_pred = visualize_df['y_predicted'].values
+            dense_pred = data.transformer.inverse_transform(dense_pred.reshape(-1, 1))
+>>>>>>> 0b8306d62660aaf93b01befaffc8a4c80c9b780d
 
             # Evaluation
             y_test = data.transformer.inverse_transform(data.y_test.reshape(-1,1)) 
@@ -173,6 +209,7 @@ def demo_page():
             st.dataframe(eval_df)
         else:
             # ARIMA
+<<<<<<< HEAD
             model_ar = Model_Stat(data)
             model_ar.train('ARIMA', p=p_ar[target], d=d_ar[target], q=q_ar[target])
             visualize_df = model_ar.visualize(scaled=scale)
@@ -188,12 +225,37 @@ def demo_page():
             model_lstm = Model_TF(data)
             model_lstm.create(['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model_lstm.visualize(scaled=True)
+=======
+            model_ar = Model_Stat(data).train(model='ARIMA', p=p_ar[target], d=d_ar[target], q=q_ar[target])
+            visualize_df = model_ar.visualize(scaled=scale)
+            ar_pred = visualize_df['y_predicted'].values
+            ar_pred = data.transformer.inverse_transform(ar_pred.reshape(-1, 1))
+
+            #SARIMAX
+            model_sar = Model_Stat(data).train(model='SARIMAX', p=p_ar[target], d=d_ar[target], q=q_ar[target], P=P[target], D=D[target], Q=Q[target])
+            visualize_df = model_sar.visualize(scaled=scale)
+            sar_pred = visualize_df['y_predicted'].values
+            sar_pred = data.transformer.inverse_transform(sar_pred.reshape(-1, 1))
+
+            #LSTM
+            model_lstm = Model_TF()
+            model_lstm.create(data, ['LSTM', 'LSTM'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            visualize_df = model_lstm.visualize(data, scaled=True)
+>>>>>>> 0b8306d62660aaf93b01befaffc8a4c80c9b780d
             lstm_pred = visualize_df['y_predicted'].values
+            lstm_pred = data.transformer.inverse_transform(lstm_pred.reshape(-1, 1))
             #FNN
+<<<<<<< HEAD
             model_dense = Model_TF(data)
             model_dense.create(['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
             visualize_df = model_dense.visualize(scaled=True)
+=======
+            model_dense = Model_TF()
+            model_dense.create(data, ['Dense', 'Dense'], [8,4], 1000, 'Huber', 'Adam', 'MSE', 0.001, "mean_squared_error", True, 5)
+            visualize_df = model_dense.visualize(data, scaled=True)
+>>>>>>> 0b8306d62660aaf93b01befaffc8a4c80c9b780d
             dense_pred = visualize_df['y_predicted'].values
+            dense_pred = data.transformer.inverse_transform(dense_pred.reshape(-1, 1))
 
             # Evaluation
             y_test = data.transformer.inverse_transform(data.y_test.reshape(-1,1))[:, 0]
