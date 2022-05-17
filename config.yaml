@@ -76,8 +76,11 @@ explanation_text:
     the overall loss and improve the accuracy. '
   tf_patience: The model will see the last n epochs, if at the last n epoch the model
     don't improve then early stopping will activate
+<<<<<<< HEAD
   FNN : "A feedforward neural network (FNN) is an artificial neural network wherein connections between the nodes do not form a cycle. As such, it is different from its descendant: recurrent neural networks.The feedforward neural network was the first and simplest type of artificial neural network devised. In this network, the information moves in only one direction forward from the input nodes, through the hidden nodes (if any) and to the output nodes. There are no cycles or loops in the network."
   LSTM : "Long short-term memory (LSTM) is an artificial neural network used in the fields of artificial intelligence and deep learning. Unlike standard feedforward neural networks, LSTM has feedback connections. Such a recurrent neural network can process not only single data points (such as images), but also entire sequences of data (such as speech or video). For example, LSTM is applicable to tasks such as unsegmented, connected handwriting recognition, speech recognition, machine translation, robot control, video games, and healthcare. A common LSTM unit is composed of a cell, an input gate, an output gate and a forget gate. The cell remembers values over arbitrary time intervals and the three gates regulate the flow of information into and out of the cell."
+=======
+>>>>>>> 615aaf98d654dd6c6234cffd52e3996b2f34fdea
 model_tf:
   layers: null
   units: null
